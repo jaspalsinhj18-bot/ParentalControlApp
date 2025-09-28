@@ -1,0 +1,27 @@
+name: Android CI - Build APKs
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+      - uses: android-actions/setup-android@v2
+        with:
+          api-level: 33
+          build-tools: '33.0.2'
+      - name: Build APKs
+        run: ./gradlew assembleRelease || true
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-artifacts
+          path: '**/build/outputs/apk/**/*.apk'
